@@ -171,3 +171,5 @@ pip-log.txt
 log*
 *.ttf
 .checkstyle
+*.iml
+*.xml

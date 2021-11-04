@@ -6,9 +6,10 @@ Invaders for CSE2024
 
 ![](http://i.minus.com/ijt8HhaA8laZq.png)
 
-### Download: [Dropbox](https://dl.dropboxusercontent.com/u/23829102/invaders.zip)
+### Download
+[Dropbox](https://dl.dropboxusercontent.com/u/23829102/invaders.zip)
 
-### Mirror: [Mediafire](http://www.mediafire.com/download/kwv9s90j9i1o4kc/invaders.zip)
+Mirror: [Mediafire](http://www.mediafire.com/download/kwv9s90j9i1o4kc/invaders.zip)
 
 ### Installation
 
