@@ -3,9 +3,7 @@
 **Please check if your PR meets the following requirements**
 
 - [ ] Tests for the changes have been added (for bug fixes / features)
-- [ ] Tested with (`npm run dev`) and is working great
-- [ ] Build tested with (`node build/build.js`) and no errors
-- [ ] Double checked the two items above
+- [ ] Build tested with (`Run Java`) and no errors
 
 ## Pull request type
 
