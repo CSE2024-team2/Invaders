@@ -2,24 +2,18 @@ package screen;
 
 import java.awt.event.KeyEvent;
 
-import engine.Cooldown;
 import engine.Core;
+import engine.Cooldown;
 
-/**
- * Implements the title screen.
- * 
- * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
- * 
- */
-public class TitleScreen extends Screen {
+public class SettingScreen extends Screen {
 
-	/** Milliseconds between changes in user selection. */
+    /** Milliseconds between changes in user selection. */
 	private static final int SELECTION_TIME = 200;
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
 
-	/**
+    /**
 	 * Constructor, establishes the properties of the screen.
 	 * 
 	 * @param width
@@ -29,33 +23,32 @@ public class TitleScreen extends Screen {
 	 * @param fps
 	 *            Frames per second, frame rate at which the game is run.
 	 */
-	public TitleScreen(final int width, final int height, final int fps) {
-		super(width, height, fps);
+    public SettingScreen(final int width, final int height, final int fps) {
+        super(width, height, fps);
 
-		// Defaults to play.
-		this.returnCode = 2;
+        this.returnCode = 1;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
-	}
+    }
 
-	/**
+    /**
 	 * Starts the action.
 	 * 
 	 * @return Next screen code.
 	 */
-	public final int run() {
+    public final int run() {
 		super.run();
 
 		return this.returnCode;
 	}
 
-	/**
+    /**
 	 * Updates the elements on screen and checks for events.
 	 */
-	protected final void update() {
+    protected final void update() {
 		super.update();
 
-		draw();
+        draw();
 		if (this.selectionCooldown.checkFinished()
 				&& this.inputDelay.checkFinished()) {
 			if (inputManager.isKeyDown(KeyEvent.VK_UP)
@@ -71,40 +64,44 @@ public class TitleScreen extends Screen {
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
 				this.isRunning = false;
 		}
-	}
+    }
 
-	/**
-	 * Shifts the focus to the next menu item.
-	 */
-	private void nextMenuItem() {
-		if (this.returnCode == 4)
-			this.returnCode = 0;
-		else if (this.returnCode == 0)
-			this.returnCode = 2;
-		else
+	// 1 5
+    private void nextMenuItem() {
+		if (this.returnCode == 6) {
+			this.returnCode = 1;
+		}	
+		else if (this.returnCode == 1){
+			this.returnCode = 5;
+		}
+		else {
 			this.returnCode++;
+		}
 	}
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-		if (this.returnCode == 0)
-			this.returnCode = 4;
-		else if (this.returnCode == 2)
-			this.returnCode = 0;
-		else
+		if (this.returnCode == 1) {
+			this.returnCode = 6;
+		}
+		else if (this.returnCode == 5){
+			this.returnCode = 1;
+		}
+		else {
 			this.returnCode--;
+		}
 	}
 
-	/**
+    /**
 	 * Draws the elements associated with the screen.
 	 */
 	private void draw() {
 		drawManager.initDrawing(this);
 
 		drawManager.drawTitle(this);
-		drawManager.drawMenu(this, this.returnCode);
+		drawManager.drawSetting(this, this.returnCode);
 
 		drawManager.completeDrawing(this);
 	}

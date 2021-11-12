@@ -70,7 +70,16 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+	/** Pause Screen */
+	private Screen pausescreen;
 
+	private Screen titlescreen;
+	/** Check if game is pause */
+	private boolean isPause;
+	/** Check ESC Cooldown */
+	private Cooldown escCooldown; 
+	/** Check if resume is printed on log */
+    private Boolean resumeLogged; 
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 * 
@@ -101,6 +110,8 @@ public class GameScreen extends Screen {
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+		this.isPause = false;
+		this.returnCode = 2;
 	}
 
 	/**
@@ -120,7 +131,8 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
-
+		this.escCooldown = Core.getCooldown(100);
+        this.resumeLogged = true;
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
@@ -169,6 +181,18 @@ public class GameScreen extends Screen {
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
 					if (this.ship.shoot(this.bullets))
 						this.bulletsShot++;
+				
+				// keyDown이 아니라 key 입력으로 받고싶은데...
+				if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
+					if (isPause == false)
+						if (this.escCooldown.checkFinished()){ 
+							this.escCooldown.reset();
+							this.isPause = true;
+							this.returnCode = 10;
+						}
+
+				}
+						
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -207,48 +231,105 @@ public class GameScreen extends Screen {
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
 			this.isRunning = false;
-
+		
+		if (this.returnCode == 1) {
+			this.isPause = false;
+			this.lives = 0;
+			this.titlescreen = new screen.TitleScreen(this.width, this.height, this.fps);
+			returnCode = titlescreen.run();
+			this.screenFinishedCooldown.reset();
+			this.isRunning = false;
+		}
 	}
 
 	/**
 	 * Draws the elements associated with the screen.
 	 */
 	private void draw() {
-		drawManager.initDrawing(this);
+		if (!isPause) {
 
-		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
-				this.ship.getPositionY());
-		if (this.enemyShipSpecial != null)
-			drawManager.drawEntity(this.enemyShipSpecial,
-					this.enemyShipSpecial.getPositionX(),
-					this.enemyShipSpecial.getPositionY());
+			if (!resumeLogged) {
+				this.logger.info("Resumed");
+				resumeLogged = true;
+			}
 
-		enemyShipFormation.draw();
+			drawManager.initDrawing(this);
 
-		for (Bullet bullet : this.bullets)
-			drawManager.drawEntity(bullet, bullet.getPositionX(),
-					bullet.getPositionY());
+			drawManager.drawEntity(this.ship, this.ship.getPositionX(),
+					this.ship.getPositionY());
+			if (this.enemyShipSpecial != null)
+				drawManager.drawEntity(this.enemyShipSpecial,
+						this.enemyShipSpecial.getPositionX(),
+						this.enemyShipSpecial.getPositionY());
 
-		// Interface.
-		drawManager.drawScore(this, this.score);
-		drawManager.drawLives(this, this.lives);
-		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+			enemyShipFormation.draw();
 
-		// Countdown to game start.
-		if (!this.inputDelay.checkFinished()) {
-			int countdown = (int) ((INPUT_DELAY
-					- (System.currentTimeMillis()
-							- this.gameStartTime)) / 1000);
-			drawManager.drawCountDown(this, this.level, countdown,
-					this.bonusLife);
-			drawManager.drawHorizontalLine(this, this.height / 2 - this.height
-					/ 12);
-			drawManager.drawHorizontalLine(this, this.height / 2 + this.height
-					/ 12);
+			for (Bullet bullet : this.bullets)
+				drawManager.drawEntity(bullet, bullet.getPositionX(),
+						bullet.getPositionY());
+
+			// Interface.
+			drawManager.drawScore(this, this.score);
+			drawManager.drawLives(this, this.lives);
+			drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+
+			// Countdown to game start.
+			if (!this.inputDelay.checkFinished()) {
+				int countdown = (int) ((INPUT_DELAY
+						- (System.currentTimeMillis()
+								- this.gameStartTime)) / 1000);
+				drawManager.drawCountDown(this, this.level, countdown,
+						this.bonusLife);
+				drawManager.drawHorizontalLine(this, this.height / 2 - this.height
+						/ 12);
+				drawManager.drawHorizontalLine(this, this.height / 2 + this.height
+						/ 12);
+			}
+
+			drawManager.completeDrawing(this);
 		}
+		else {
+			this.pausescreen = new PauseScreen(width, height, fps);
+			drawManager.initDrawing(pausescreen);
+			
+			drawManager.drawTitle(this);
+			drawManager.drawPause(this, this.returnCode);
+			this.logger.info("Paused");
+			this.resumeLogged = false;
+			drawManager.completeDrawing(this);
+			while(isPause) {
+				try {
+					Thread.sleep(80);
+					this.returnCode = pausescreen.run();
 
-		drawManager.completeDrawing(this);
+					if (this.returnCode == 1) {
+						return;
+					}
+
+					else if (this.returnCode == 7) {
+						this.level = 1;
+						this.score = 0;
+						this.lives = 3;
+						initialize();
+						this.logger.info("Restart");
+						this.isPause = false;
+						this.returnCode = 2;
+					}
+
+				if (this.inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
+						if (this.escCooldown.checkFinished()){
+							this.escCooldown.reset();
+							this.isPause = false;
+							this.returnCode = 2;
+						}
+					}
+					
+					Thread.sleep(80);
+				} catch (InterruptedException e) { }
+			}
+		}
 	}
+
 
 	/**
 	 * Cleans bullets that go off screen.

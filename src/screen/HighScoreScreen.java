@@ -47,7 +47,7 @@ public class HighScoreScreen extends Screen {
 	 */
 	public final int run() {
 		super.run();
-
+		draw();
 		return this.returnCode;
 	}
 
