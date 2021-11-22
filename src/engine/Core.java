@@ -24,9 +24,9 @@ import screen.TitleScreen;
 public final class Core {
 
 	/** Width of current screen. */
-	private static final int WIDTH = 448;
+	private static final int WIDTH = 672;
 	/** Height of current screen. */
-	private static final int HEIGHT = 520;
+	private static final int HEIGHT = 780;
 	/** Max fps of current screen. */
 	private static final int FPS = 60;
 
@@ -159,13 +159,14 @@ public final class Core {
 				} while (gameState.getLivesRemaining() > 0
 						&& gameState.getLevel() <= NUM_LEVELS);
 
-				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-						+ " score screen at " + FPS + " fps, with a score of "
-						+ gameState.getScore() + ", "
-						+ gameState.getLivesRemaining() + " lives remaining, "
-						+ gameState.getBulletsShot() + " bullets shot and "
-						+ gameState.getShipsDestroyed() + " ships destroyed.");
+
 				if(returnCode == 2) {
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+					+ " score screen at " + FPS + " fps, with a score of "
+					+ gameState.getScore() + ", "
+					+ gameState.getLivesRemaining() + " lives remaining, "
+					+ gameState.getBulletsShot() + " bullets shot and "
+					+ gameState.getShipsDestroyed() + " ships destroyed.");
 					currentScreen = new ScoreScreen(width, height, FPS, gameState);
 					returnCode = frame.setScreen(currentScreen);
 					LOGGER.info("Closing score screen.");

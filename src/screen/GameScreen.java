@@ -8,12 +8,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
-import entity.Bullet;
-import entity.BulletPool;
-import entity.EnemyShip;
-import entity.EnemyShipFormation;
-import entity.Entity;
-import entity.Ship;
+import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
@@ -28,7 +23,7 @@ public class GameScreen extends Screen {
 	/** Bonus score for each life remaining at the end of the level. */
 	private static final int LIFE_SCORE = 100;
 	/** Minimum time between bonus ship's appearances. */
-	private static final int BONUS_SHIP_INTERVAL = 20000;
+	private static final int BONUS_SHIP_INTERVAL = 15000;
 	/** Maximum variance in the time between bonus ship's appearances. */
 	private static final int BONUS_SHIP_VARIANCE = 10000;
 	/** Time until bonus ship explosion disappears. */
@@ -37,6 +32,10 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Difficulty settings for level 1. */
+	private static final GameSettings RESTART_SETTING =
+			new GameSettings(5, 4, 60, 2000);
+
 
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
@@ -72,8 +71,6 @@ public class GameScreen extends Screen {
 	private boolean bonusLife;
 	/** Pause Screen */
 	private Screen pausescreen;
-
-	private Screen titlescreen;
 	/** Check if game is pause */
 	private boolean isPause;
 	/** Check ESC Cooldown */
@@ -131,7 +128,8 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
-		this.escCooldown = Core.getCooldown(100);
+		this.escCooldown = Core.getCooldown(500);
+		this.escCooldown.reset();
         this.resumeLogged = true;
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -149,7 +147,6 @@ public class GameScreen extends Screen {
 
 		this.score += LIFE_SCORE * (this.lives - 1);
 		this.logger.info("Screen cleared with a score of " + this.score);
-
 		return this.returnCode;
 	}
 
@@ -182,25 +179,32 @@ public class GameScreen extends Screen {
 					if (this.ship.shoot(this.bullets))
 						this.bulletsShot++;
 				
-				// keyDown이 아니라 key 입력으로 받고싶은데...
 				if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
-					if (isPause == false)
-						if (this.escCooldown.checkFinished()){ 
+					if (isPause == false) {
+						if (this.escCooldown.checkFinished()){
 							this.escCooldown.reset();
 							this.isPause = true;
 							this.returnCode = 10;
 						}
+					}
 
 				}
 						
 			}
 
 			if (this.enemyShipSpecial != null) {
-				if (!this.enemyShipSpecial.isDestroyed())
+				if (!this.enemyShipSpecial.isDestroyed()){
 					this.enemyShipSpecial.move(2, 0);
-				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
+				}
+				else if (this.enemyShipSpecialExplosionCooldown.checkFinished()){
+					int destroyed_x = enemyShipSpecial.getPositionX() + enemyShipSpecial.getWidth()/2;
+					int destroyed_y = enemyShipSpecial.getPositionY();
 					this.enemyShipSpecial = null;
-
+					this.logger.info("A reward bullet appears");
+					RewardBullet rewardBullet = new RewardBullet(destroyed_x, destroyed_y);
+					rewardBullet.setPositionX(destroyed_x - rewardBullet.getWidth() / 2);
+					bullets.add(rewardBullet);
+				}
 			}
 			if (this.enemyShipSpecial == null
 					&& this.enemyShipSpecialCooldown.checkFinished()) {
@@ -229,15 +233,12 @@ public class GameScreen extends Screen {
 			this.screenFinishedCooldown.reset();
 		}
 
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
 			this.isRunning = false;
+		}
 		
 		if (this.returnCode == 1) {
-			this.isPause = false;
-			this.lives = 0;
-			this.titlescreen = new screen.TitleScreen(this.width, this.height, this.fps);
-			returnCode = titlescreen.run();
-			this.screenFinishedCooldown.reset();
+			this.logger.info("Go to menu");
 			this.isRunning = false;
 		}
 	}
@@ -310,19 +311,20 @@ public class GameScreen extends Screen {
 						this.level = 1;
 						this.score = 0;
 						this.lives = 3;
+						this.bulletsShot = 0;
+						this.shipsDestroyed = 0;
+						this.gameSettings = RESTART_SETTING;
 						initialize();
 						this.logger.info("Restart");
 						this.isPause = false;
 						this.returnCode = 2;
 					}
 
-				if (this.inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
-						if (this.escCooldown.checkFinished()){
-							this.escCooldown.reset();
-							this.isPause = false;
-							this.returnCode = 2;
-						}
+					else if (this.returnCode == 2){
+						this.isPause = false;
+						this.escCooldown.reset();
 					}
+
 					
 					Thread.sleep(80);
 				} catch (InterruptedException e) { }
@@ -356,10 +358,16 @@ public class GameScreen extends Screen {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
 					if (!this.ship.isDestroyed()) {
-						this.ship.destroy();
-						this.lives--;
-						this.logger.info("Hit on player ship, " + this.lives
-								+ " lives remaining.");
+						if (bullet instanceof RewardBullet){
+							this.logger.info("Reward acquire.");
+							this.getReward();
+						}
+						else {
+							this.ship.destroy();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+						}
 					}
 				}
 			} else {
@@ -375,6 +383,11 @@ public class GameScreen extends Screen {
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					this.score += this.enemyShipSpecial.getPointValue();
+					/** 
+					* Test for kill reward
+					* ship.increase_Numofbullets();
+					* ship.decrease_Interval();
+					*  */ 
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
@@ -408,6 +421,33 @@ public class GameScreen extends Screen {
 		int distanceY = Math.abs(centerAY - centerBY);
 
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
+	}
+
+	private void getReward() {
+		// 한 스테이지에서만 적용
+		int tmp = (int)(Math.random() * 5);
+		this.logger.info("get reward...");
+		switch(tmp) {
+		case 1:
+			ship.increase_Numofbullets();
+			this.logger.info("shoot more!");
+			break;
+		case 2:
+			ship.decrease_Interval();
+			this.logger.info("shoot faster!");
+			break;
+		case 3:
+			ship.increase_BulletSpeed();
+			this.logger.info("bullets are going faster!");
+			break;
+		case 4:
+			ship.increase_Speed();
+			this.logger.info("move faster!");
+			break;
+		default:
+			this.logger.info("Oops! not in here!");
+			break;
+		}
 	}
 
 	/**

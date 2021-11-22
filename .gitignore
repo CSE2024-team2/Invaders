@@ -172,4 +172,10 @@ log*
 *.ttf
 .checkstyle
 *.iml
-*.xml
+# *.xml
+
+##############
+## IDE Setting
+##############
+demo/
+.vscode/
