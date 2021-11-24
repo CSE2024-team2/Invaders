@@ -17,7 +17,7 @@ public class MusicManager {
 
     private final static File main_bgm = new File("res/MainBGM.wav"); // runtime 265000
     private final static File shoot = new File("res/Shoot.wav"); // runtime 1000
-    private final static File come_boss = new File("res/Begin boss.wav"); // runtime 32000
+    private final static File come_boss = new File("res/Beginboss.wav"); // runtime 32000
     private final static File game_bgm = new File("res/GameBGM.wav"); // runtime 168000
     private final static File ship_exp = new File("res/ShipExplosion.wav");
     private final static File enemy_exp = new File("res/EnemyShipExplosion.wav");
