@@ -16,11 +16,17 @@ import engine.DrawManager.SpriteType;
 public class Ship extends Entity {
 
 	/** Time between shots. */
-	private static final int SHOOTING_INTERVAL = 750;
+	private int shooting_interval = 750;
 	/** Speed of the bullets shot by the ship. */
-	private static final int BULLET_SPEED = -6;
+	private int bullet_speed = -6;
 	/** Movement of the ship for each unit of time. */
-	private static final int SPEED = 2;
+	private int ship_speed = 2;
+	/** The number of bullets ship shoots at once. */
+	private int num_of_bullets = 1;
+
+	private static final int UNIT_INTERVAL = 150;
+	private static final int UNIT_SHIP_SPEED = 1;
+	private static final int UNIT_BULLET_SPEED = 2;
 	
 	/** Minimum time between shots. */
 	private Cooldown shootingCooldown;
@@ -39,7 +45,7 @@ public class Ship extends Entity {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 
 		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.shootingCooldown = Core.getCooldown(shooting_interval);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
 
@@ -48,7 +54,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += SPEED;
+		this.positionX += ship_speed;
 	}
 
 	/**
@@ -56,7 +62,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= SPEED;
+		this.positionX -= ship_speed;
 	}
 
 	/**
@@ -67,10 +73,28 @@ public class Ship extends Entity {
 	 * @return Checks if the bullet was shot correctly.
 	 */
 	public final boolean shoot(final Set<Bullet> bullets) {
-		if (this.shootingCooldown.checkFinished()) {
+		if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 1) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed));
+			return true;
+		}
+		else if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 2) {
+			this.shootingCooldown.reset();
+			bullets.add(BulletPool.getBullet(positionX,
+					positionY, bullet_speed));
+			bullets.add(BulletPool.getBullet(positionX + this.width,
+					positionY, bullet_speed));
+			return true;
+		}
+		else if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 3) {
+			this.shootingCooldown.reset();
+			bullets.add(BulletPool.getBullet(positionX - 10,
+					positionY, bullet_speed));
+			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
+					positionY, bullet_speed));
+			bullets.add(BulletPool.getBullet(positionX + this.width + 10,
+					positionY, bullet_speed));
 			return true;
 		}
 		return false;
@@ -108,6 +132,90 @@ public class Ship extends Entity {
 	 * @return Speed of the ship.
 	 */
 	public final int getSpeed() {
-		return SPEED;
+		return ship_speed;
+	}
+
+	/**
+	 * Getter for the bullets ship shoots at once.
+	 * 
+	 * @return Bullets ship shoots at once.
+	 */
+	public final int getShoot() {
+		return num_of_bullets;
+	}
+
+	/**
+	 * Increase ship's speed by unit speed(1).
+	 * 
+	 */
+	public final void increase_Speed() {
+		this.ship_speed += UNIT_SHIP_SPEED;
+	}
+
+	/**
+	 * Decrease ship's speed by unit speed(1).
+	 * 
+	 */
+	public final void decrease_Speed() {
+		if(ship_speed > UNIT_SHIP_SPEED) {
+			this.ship_speed -= UNIT_SHIP_SPEED;
+		}
+	}
+
+	/**
+	 * Increase ship's bullet speed by unit speed(2).
+	 * 
+	 */
+	public final void increase_BulletSpeed() {
+		this.bullet_speed -= UNIT_BULLET_SPEED;
+	}
+
+	/**
+	 * Decrease ship's bullet speed by unit speed(2).
+	 * 
+	 */
+	public final void decrease_BulletSpeed() {
+		if(bullet_speed < -UNIT_BULLET_SPEED) {
+			this.bullet_speed += UNIT_BULLET_SPEED;
+		}
+	}
+
+	/**
+	 * Decrease ship's shooting interval by unit time(150)
+	 * as a result, ship shoot faster.
+	 */
+	public final void decrease_Interval() {
+		if(shooting_interval > UNIT_INTERVAL) {
+			this.shooting_interval -= UNIT_INTERVAL;
+		}
+		this.shootingCooldown = Core.getCooldown(shooting_interval);
+	}
+
+	/**
+	 * Increase ship's shooting interval by unit time(150)
+	 * as a result, ship shoot slower.
+	 * 
+	 */
+	public final void increase_Interval() {
+		this.shooting_interval += UNIT_INTERVAL;
+		this.shootingCooldown = Core.getCooldown(shooting_interval);
+	}
+
+	/**
+	 * Increase the bullets that ship shoots at once.
+	 * 
+	 */
+	public final void increase_Numofbullets() {
+		if (num_of_bullets < 3)
+			this.num_of_bullets += 1;
+	}
+
+	/**
+	 * Decrease the bullets that ship shoots at once.
+	 * 
+	 */
+	public final void decrease_Numofbullets() {
+		if(num_of_bullets > 1)
+			this.num_of_bullets -= 1;
 	}
 }

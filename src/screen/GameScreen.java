@@ -8,12 +8,8 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
-import entity.Bullet;
-import entity.BulletPool;
-import entity.EnemyShip;
-import entity.EnemyShipFormation;
-import entity.Entity;
-import entity.Ship;
+import engine.MusicManager;
+import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
@@ -28,7 +24,7 @@ public class GameScreen extends Screen {
 	/** Bonus score for each life remaining at the end of the level. */
 	private static final int LIFE_SCORE = 100;
 	/** Minimum time between bonus ship's appearances. */
-	private static final int BONUS_SHIP_INTERVAL = 20000;
+	private static final int BONUS_SHIP_INTERVAL = 15000;
 	/** Maximum variance in the time between bonus ship's appearances. */
 	private static final int BONUS_SHIP_VARIANCE = 10000;
 	/** Time until bonus ship explosion disappears. */
@@ -37,6 +33,10 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Difficulty settings for level 1. */
+	private static final GameSettings RESTART_SETTING =
+			new GameSettings(5, 4, 60, 2000);
+
 
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
@@ -70,6 +70,14 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+	/** Pause Screen */
+	private Screen pausescreen;
+	/** Check if game is pause */
+	private boolean isPause;
+	/** Check ESC Cooldown */
+	private Cooldown escCooldown; 
+	/** Check if resume is printed on log */
+    private Boolean resumeLogged; 
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -101,6 +109,8 @@ public class GameScreen extends Screen {
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+		this.isPause = false;
+		this.returnCode = 2;
 	}
 
 	/**
@@ -120,7 +130,9 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
-
+		this.escCooldown = Core.getCooldown(500);
+		this.escCooldown.reset();
+        this.resumeLogged = true;
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
@@ -137,7 +149,6 @@ public class GameScreen extends Screen {
 
 		this.score += LIFE_SCORE * (this.lives - 1);
 		this.logger.info("Screen cleared with a score of " + this.score);
-
 		return this.returnCode;
 	}
 
@@ -146,7 +157,7 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-
+		MusicManager.run_game();
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
 			if (!this.ship.isDestroyed()) {
@@ -167,16 +178,35 @@ public class GameScreen extends Screen {
 					this.ship.moveLeft();
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-					if (this.ship.shoot(this.bullets))
+					if (this.ship.shoot(this.bullets)) {
+						MusicManager.run_shoot();
 						this.bulletsShot++;
+					}
+				
+				if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
+					if (isPause == false) {
+						if (this.escCooldown.checkFinished()){
+							this.escCooldown.reset();
+							this.isPause = true;
+							this.returnCode = 10;
+						}
+					}
+				}
 			}
 
 			if (this.enemyShipSpecial != null) {
-				if (!this.enemyShipSpecial.isDestroyed())
+				if (!this.enemyShipSpecial.isDestroyed()){
 					this.enemyShipSpecial.move(2, 0);
-				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
+				}
+				else if (this.enemyShipSpecialExplosionCooldown.checkFinished()){
+					int destroyed_x = enemyShipSpecial.getPositionX() + enemyShipSpecial.getWidth()/2;
+					int destroyed_y = enemyShipSpecial.getPositionY();
 					this.enemyShipSpecial = null;
-
+					this.logger.info("A reward bullet appears");
+					RewardBullet rewardBullet = new RewardBullet(destroyed_x, destroyed_y);
+					rewardBullet.setPositionX(destroyed_x - rewardBullet.getWidth() / 2);
+					bullets.add(rewardBullet);
+				}
 			}
 			if (this.enemyShipSpecial == null
 					&& this.enemyShipSpecialCooldown.checkFinished()) {
@@ -205,50 +235,103 @@ public class GameScreen extends Screen {
 			this.screenFinishedCooldown.reset();
 		}
 
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
 			this.isRunning = false;
-
+		}
+		
+		if (this.returnCode == 1) {
+			this.logger.info("Go to menu");
+			this.isRunning = false;
+		}
 	}
 
 	/**
 	 * Draws the elements associated with the screen.
 	 */
 	private void draw() {
-		drawManager.initDrawing(this);
+		if (!isPause) {
 
-		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
-				this.ship.getPositionY());
-		if (this.enemyShipSpecial != null)
-			drawManager.drawEntity(this.enemyShipSpecial,
-					this.enemyShipSpecial.getPositionX(),
-					this.enemyShipSpecial.getPositionY());
+			if (!resumeLogged) {
+				this.logger.info("Resumed");
+				resumeLogged = true;
+			}
 
-		enemyShipFormation.draw();
+			drawManager.initDrawing(this);
 
-		for (Bullet bullet : this.bullets)
-			drawManager.drawEntity(bullet, bullet.getPositionX(),
-					bullet.getPositionY());
+			drawManager.drawEntity(this.ship, this.ship.getPositionX(),
+					this.ship.getPositionY());
+			if (this.enemyShipSpecial != null)
+				drawManager.drawEntity(this.enemyShipSpecial,
+						this.enemyShipSpecial.getPositionX(),
+						this.enemyShipSpecial.getPositionY());
 
-		// Interface.
-		drawManager.drawScore(this, this.score);
-		drawManager.drawLives(this, this.lives);
-		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+			enemyShipFormation.draw();
 
-		// Countdown to game start.
-		if (!this.inputDelay.checkFinished()) {
-			int countdown = (int) ((INPUT_DELAY
-					- (System.currentTimeMillis()
-							- this.gameStartTime)) / 1000);
-			drawManager.drawCountDown(this, this.level, countdown,
-					this.bonusLife);
-			drawManager.drawHorizontalLine(this, this.height / 2 - this.height
-					/ 12);
-			drawManager.drawHorizontalLine(this, this.height / 2 + this.height
-					/ 12);
+			for (Bullet bullet : this.bullets)
+				drawManager.drawEntity(bullet, bullet.getPositionX(),
+						bullet.getPositionY());
+
+			// Interface.
+			drawManager.drawScore(this, this.score);
+			drawManager.drawLives(this, this.lives);
+			drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+
+			// Countdown to game start.
+			if (!this.inputDelay.checkFinished()) {
+				int countdown = (int) ((INPUT_DELAY
+						- (System.currentTimeMillis()
+								- this.gameStartTime)) / 1000);
+				drawManager.drawCountDown(this, this.level, countdown,
+						this.bonusLife);
+				drawManager.drawHorizontalLine(this, this.height / 2 - this.height
+						/ 12);
+				drawManager.drawHorizontalLine(this, this.height / 2 + this.height
+						/ 12);
+			}
+			drawManager.completeDrawing(this);
 		}
+		else {
+			this.pausescreen = new PauseScreen(width, height, fps);
+			drawManager.initDrawing(pausescreen);
+			
+			drawManager.drawTitle(this);
+			drawManager.drawPause(this, this.returnCode);
+			this.logger.info("Paused");
+			this.resumeLogged = false;
+			drawManager.completeDrawing(this);
+			while(isPause) {
+				try {
+					Thread.sleep(80);
+					this.returnCode = pausescreen.run();
 
-		drawManager.completeDrawing(this);
+					if (this.returnCode == 1) {
+						return;
+					}
+
+					else if (this.returnCode == 7) {
+						this.level = 1;
+						this.score = 0;
+						this.lives = 3;
+						this.bulletsShot = 0;
+						this.shipsDestroyed = 0;
+						this.gameSettings = RESTART_SETTING;
+						initialize();
+						this.logger.info("Restart");
+						this.isPause = false;
+						this.update();
+						this.returnCode = 2;
+					}
+
+					else if (this.returnCode == 2){
+						this.isPause = false;
+						this.escCooldown.reset();
+					}
+					Thread.sleep(80);
+				} catch (InterruptedException e) { }
+			}
+		}
 	}
+
 
 	/**
 	 * Cleans bullets that go off screen.
@@ -275,10 +358,17 @@ public class GameScreen extends Screen {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
 					if (!this.ship.isDestroyed()) {
-						this.ship.destroy();
-						this.lives--;
-						this.logger.info("Hit on player ship, " + this.lives
-								+ " lives remaining.");
+						if (bullet instanceof RewardBullet){
+							this.logger.info("Reward acquire.");
+							this.getReward();
+						}
+						else {
+							this.ship.destroy();
+							MusicManager.run_exp();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+						}
 					}
 				}
 			} else {
@@ -286,6 +376,7 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
+						MusicManager.run_enemy_exp();
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -294,6 +385,7 @@ public class GameScreen extends Screen {
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					this.score += this.enemyShipSpecial.getPointValue();
+					MusicManager.run_enemy_exp();
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
@@ -327,6 +419,34 @@ public class GameScreen extends Screen {
 		int distanceY = Math.abs(centerAY - centerBY);
 
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
+	}
+
+	private void getReward() {
+		// 한 스테이지에서만 적용
+		int tmp = (int)(Math.random() * 5);
+		this.logger.info("get reward...");
+		MusicManager.run_item();
+		switch(tmp) {
+		case 1:
+			ship.increase_Numofbullets();
+			this.logger.info("shoot more!");
+			break;
+		case 2:
+			ship.decrease_Interval();
+			this.logger.info("shoot faster!");
+			break;
+		case 3:
+			ship.increase_BulletSpeed();
+			this.logger.info("bullets are going faster!");
+			break;
+		case 4:
+			ship.increase_Speed();
+			this.logger.info("move faster!");
+			break;
+		default:
+			this.logger.info("Oops! not in here!");
+			break;
+		}
 	}
 
 	/**
