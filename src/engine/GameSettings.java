@@ -38,16 +38,6 @@ public class GameSettings {
 	}
 
 	/**
-	 * Constructor for Boss stage.
-	 * 
-	 * 
-	 * 
-	 */
-	public GameSettings() {
-
-	}
-
-	/**
 	 * @return the formationWidth
 	 */
 	public final int getFormationWidth() {
