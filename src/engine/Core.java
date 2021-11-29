@@ -194,6 +194,7 @@ public final class Core {
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing Video screen.");
 				break;
+
 			default:
 				break;
 			}

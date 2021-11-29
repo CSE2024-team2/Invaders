@@ -339,6 +339,7 @@ public final class DrawManager {
 		String playString = "Play";
 		String highScoresString = "High scores";
 		String pauseString = "Setting";
+		String helpString = "Help";
 		String exitString = "exit";
 
 		if (option == 2)
@@ -359,12 +360,18 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, pauseString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 4);
+		if (option == 5)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, helpString, screen.getHeight()
+				/ 3 * 2 + fontRegularMetrics.getHeight() * 6);
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 6);
+				* 2 + fontRegularMetrics.getHeight() * 8);
 	}
 
 	/**
@@ -619,6 +626,41 @@ public final class DrawManager {
 					/ 4 + fontRegularMetrics.getHeight() * (i + 1) * 2);
 			i++;
 		}
+	}
+
+	/**
+	 * Draws Help screen title and contents.
+	 *
+	 * @param screen
+	 *            Screen to draw on.
+	 */
+	public void drawHelp(final Screen screen){
+		String HelpString = "Help";
+		String instructionsString = "Press Space to return";
+
+		String escKeyString = "Press ESC key to pause game";
+		String spacebarString = "Press SpaceBar to shoot";
+		String arrowsString = "Press arrows to move ship";
+
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, HelpString,
+				screen.getHeight() / 8);
+
+		backBufferGraphics.setColor(Color.GRAY);
+		drawCenteredRegularString(screen, instructionsString,
+				screen.getHeight() / 5);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, escKeyString,
+				screen.getHeight() / 3
+						+ fontRegularMetrics.getHeight() * 2);
+		drawCenteredRegularString(screen, spacebarString,
+				screen.getHeight() / 3
+						+ fontRegularMetrics.getHeight() * 4);
+		drawCenteredRegularString(screen, arrowsString,
+				screen.getHeight() / 3
+						+ fontRegularMetrics.getHeight() * 6);
+
 	}
 
 	/**
