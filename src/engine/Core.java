@@ -8,12 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import screen.GameScreen;
-import screen.HighScoreScreen;
-import screen.SettingScreen;
-import screen.ScoreScreen;
-import screen.Screen;
-import screen.TitleScreen;
+import screen.*;
 
 /**
  * Implements core game logic.
@@ -192,14 +187,22 @@ public final class Core {
 				returnCode = frame.setScreen(currentScreen);
 				break;
 			case 6:
-				// Video Setting? fps? something
-				// not yet
-				// currentScreen = new VideoScreen(width, height, FPS);
+				// Ship Selecting.
+				currentScreen = new ShipScreen(width, height, FPS);
 				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 				+ " Video screen at " + FPS + " fps.");
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing Video screen.");
 				break;
+      case 7:
+        // Help.
+				currentScreen = new HelpScreen(width, height, FPS);
+				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+						+ " help screen at " + FPS + " fps.");
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing help screen.");
+				break;
+
 			default:
 				break;
 			}

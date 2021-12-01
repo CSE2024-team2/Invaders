@@ -6,6 +6,7 @@ import java.util.Set;
 import engine.Cooldown;
 import engine.Core;
 import engine.DrawManager.SpriteType;
+import screen.ShipScreen;
 
 /**
  * Implements a ship, to be controlled by the player.
@@ -23,6 +24,8 @@ public class Ship extends Entity {
 	private int ship_speed = 2;
 	/** The number of bullets ship shoots at once. */
 	private int num_of_bullets = 1;
+
+	private int shipcode = 1;
 
 	private static final int UNIT_INTERVAL = 150;
 	private static final int UNIT_SHIP_SPEED = 1;
@@ -43,8 +46,14 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
-
-		this.spriteType = SpriteType.Ship;
+		ShipScreen shipscreen = new ShipScreen(width, height, 60);
+		this.shipcode = shipscreen.getShipCode();
+		if(this.shipcode == 1) {
+			this.spriteType = SpriteType.Ship;
+		} else if (this.shipcode == 2) {
+			this.spriteType = SpriteType.Ship2;
+		}
+		
 		this.shootingCooldown = Core.getCooldown(shooting_interval);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
@@ -106,8 +115,13 @@ public class Ship extends Entity {
 	public final void update() {
 		if (!this.destructionCooldown.checkFinished())
 			this.spriteType = SpriteType.ShipDestroyed;
-		else
-			this.spriteType = SpriteType.Ship;
+		else {
+			if(this.shipcode == 1) {
+				this.spriteType = SpriteType.Ship;
+			} else if (this.shipcode == 2) {
+				this.spriteType = SpriteType.Ship2;
+			}
+		}
 	}
 
 	/**

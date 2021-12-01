@@ -77,7 +77,7 @@ public class GameScreen extends Screen {
 	/** Check ESC Cooldown */
 	private Cooldown escCooldown; 
 	/** Check if resume is printed on log */
-    private Boolean resumeLogged; 
+    private Boolean resumeLogged;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
