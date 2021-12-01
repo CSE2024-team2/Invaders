@@ -57,6 +57,29 @@ public class Entity {
 		return color;
 	}
 
+	public static String getImage(Entity entity) {
+		switch (entity.spriteType) {
+			case EnemyShipA1:
+				return "res/image/a1.png";
+			case EnemyShipA2:
+				return "res/image/a2.png";
+			case EnemyShipB1:
+				return "res/image/b1.png";
+			case EnemyShipB2:
+				return "res/image/b2.png";
+			case EnemyShipC1:
+				return "res/image/c1.png";
+			case EnemyShipC2:
+				return "res/image/c2.png";
+			case EnemyShipSpecial:
+				return "res/image/specialship_r.png";
+			case RewardBullet:
+				return "res/image/reward.png";
+			default:
+				return "";
+		}
+	}
+
 	/**
 	 * Getter for the X axis position of the entity.
 	 * 

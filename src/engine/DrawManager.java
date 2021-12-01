@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import screen.Screen;
 import entity.Entity;
 import entity.Ship;
+import entity.EnemyShip;
 
 /**
  * Manages screen drawing.
@@ -202,12 +203,25 @@ public final class DrawManager {
 			final int positionY) {
 		boolean[][] image = spriteMap.get(entity.getSpriteType());
 
-		backBufferGraphics.setColor(entity.getColor());
-		for (int i = 0; i < image.length; i++)
-			for (int j = 0; j < image[i].length; j++)
-				if (image[i][j])
-					backBufferGraphics.drawRect(positionX + i * 2, positionY
-							+ j * 2, 1, 1);
+		Image icon;
+
+		if (entity.getImage(entity) != "") {
+			icon = new ImageIcon(EnemyShip.getImage(entity)).getImage();
+			if (entity.getSpriteType() == SpriteType.EnemyShipSpecial)
+				backBufferGraphics.drawImage(icon, positionX, positionY, 60, 25, null);
+			else if (entity.getSpriteType() == SpriteType.RewardBullet)
+				backBufferGraphics.drawImage(icon, positionX, positionY, 15, 15, null);
+			else
+				backBufferGraphics.drawImage(icon, positionX, positionY, 27, 32, null);
+		} else {
+			backBufferGraphics.setColor(entity.getColor());
+
+			for (int i = 0; i < image.length; i++)
+				for (int j = 0; j < image[i].length; j++)
+					if (image[i][j])
+						backBufferGraphics.drawRect(positionX + i * 2, positionY
+								+ j * 2, 1, 1);
+		}
 	}
 
 	/**
