@@ -360,7 +360,7 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, pauseString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 4);
-		if (option == 5)
+		if (option == 7)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
