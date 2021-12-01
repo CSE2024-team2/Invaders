@@ -17,14 +17,14 @@ public class MusicManager {
 
     private final static File main_bgm = new File("res/MainBGM.wav"); // runtime 265000
     private final static File shoot = new File("res/Shoot.wav"); // runtime 1000
-    private final static File come_boss = new File("res/Beginboss.wav"); // runtime 32000
-    private final static File game_bgm = new File("res/GameBGM.wav"); // runtime 168000
+    private final static File come_boss = new File("res/BeginBoss.wav"); // runtime 32000
+    private final static File game_bgm = new File("res/JingleBells.wav"); // runtime 168000
     private final static File ship_exp = new File("res/ShipExplosion.wav");
     private final static File enemy_exp = new File("res/EnemyShipExplosion.wav");
     private final static File get_item = new File("res/GetItem.wav");
 
     private static final int MAIN_BGM_LENGTH = 264000;
-    private static final int GAME_BGM_LENGTH = 167000;
+    private static final int GAME_BGM_LENGTH = 102000;
 
     public static Cooldown mainCooldown = Core.getCooldown(MAIN_BGM_LENGTH);
     public static Cooldown gameCooldown = Core.getCooldown(GAME_BGM_LENGTH);

@@ -159,7 +159,7 @@ public final class DrawManager {
 		backBufferGraphics
 				.fillRect(0, 0, screen.getWidth(), screen.getHeight());
 		
-		Image img = new ImageIcon("res/moon.png").getImage();
+		Image img = new ImageIcon("res/img.jpg").getImage();
 		backBufferGraphics.drawImage(img, 0, 0, null);
 
 		fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
@@ -305,7 +305,7 @@ public final class DrawManager {
 		String instructionsString =
 				"select with w+s / arrows, confirm with space";
 
-		backBufferGraphics.setColor(Color.GRAY);
+		backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, instructionsString,
 				screen.getHeight() / 2);
 
@@ -587,7 +587,7 @@ public final class DrawManager {
 		if (acceptsInput)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
-			backBufferGraphics.setColor(Color.GRAY);
+			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, continueOrExitString,
 				screen.getHeight() / 2 + fontRegularMetrics.getHeight() * 10);
 	}
@@ -605,7 +605,7 @@ public final class DrawManager {
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, highScoreString, screen.getHeight() / 8);
 
-		backBufferGraphics.setColor(Color.GRAY);
+		backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, instructionsString,
 				screen.getHeight() / 5);
 	}
@@ -651,7 +651,7 @@ public final class DrawManager {
 		drawCenteredBigString(screen, HelpString,
 				screen.getHeight() / 8);
 
-		backBufferGraphics.setColor(Color.GRAY);
+		backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, instructionsString,
 				screen.getHeight() / 5);
 
