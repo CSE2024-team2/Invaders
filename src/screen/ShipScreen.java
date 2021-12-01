@@ -14,7 +14,7 @@ public class ShipScreen extends Screen {
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
 
-    private int selectionNum = 1;
+    private static int selectionNum = 1;
 
 
     public ShipScreen(final int width, final int height, final int fps) {

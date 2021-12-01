@@ -6,6 +6,7 @@ import java.util.Set;
 import engine.Cooldown;
 import engine.Core;
 import engine.DrawManager.SpriteType;
+import screen.ShipScreen;
 
 /**
  * Implements a ship, to be controlled by the player.
@@ -45,6 +46,8 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY, int shipcode) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
+		ShipScreen shipscreen = new ShipScreen(width, height, 60);
+		this.shipcode = shipscreen.getShipCode();
 		if(this.shipcode == 1) {
 			this.spriteType = SpriteType.Ship;
 		} else if (this.shipcode == 2) {
