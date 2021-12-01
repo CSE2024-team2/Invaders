@@ -82,6 +82,28 @@ public class Entity {
 		}
 	}
 
+	public static int getImageWidth(Entity entity) {
+		switch (entity.spriteType) {
+			case EnemyShipSpecial:
+				return 60;
+			case RewardBullet:
+				return 15;
+			default:
+				return 27;
+		}
+	}
+
+	public static int getImageHeight(Entity entity) {
+		switch (entity.spriteType) {
+			case EnemyShipSpecial:
+				return 25;
+			case RewardBullet:
+				return 15;
+			default:
+				return 32;
+		}
+	}
+
 	/**
 	 * Getter for the X axis position of the entity.
 	 * 

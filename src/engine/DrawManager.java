@@ -194,16 +194,12 @@ public final class DrawManager {
 			final int positionY) {
 		boolean[][] image = spriteMap.get(entity.getSpriteType());
 
-		Image icon;
 
 		if (entity.getImage(entity) != "") {
-			icon = new ImageIcon(EnemyShip.getImage(entity)).getImage();
-			if (entity.getSpriteType() == SpriteType.EnemyShipSpecial)
-				backBufferGraphics.drawImage(icon, positionX, positionY, 60, 25, null);
-			else if (entity.getSpriteType() == SpriteType.RewardBullet)
-				backBufferGraphics.drawImage(icon, positionX, positionY, 15, 15, null);
-			else
-				backBufferGraphics.drawImage(icon, positionX, positionY, 27, 32, null);
+			Image icon = new ImageIcon(EnemyShip.getImage(entity)).getImage();
+			int width = entity.getImageWidth(entity);
+			int height = entity.getImageHeight(entity);
+			backBufferGraphics.drawImage(icon, positionX, positionY, width, height, null);
 		} else {
 			backBufferGraphics.setColor(entity.getColor());
 
