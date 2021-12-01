@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import engine.Cooldown;
 import engine.Core;
+import engine.MusicManager;
 
 /**
  * Implements the title screen.
@@ -54,7 +55,7 @@ public class TitleScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-
+		MusicManager.run_main();
 		draw();
 		if (this.selectionCooldown.checkFinished()
 				&& this.inputDelay.checkFinished()) {

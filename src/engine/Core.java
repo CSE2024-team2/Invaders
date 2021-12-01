@@ -73,7 +73,6 @@ public final class Core {
 	/** Logger handler for printing to console. */
 	private static ConsoleHandler consoleHandler;
 
-
 	/**
 	 * Test implementation.
 	 * 
@@ -155,7 +154,6 @@ public final class Core {
 						break;
 					}
 
-
 				} while (gameState.getLivesRemaining() > 0
 						&& gameState.getLevel() <= NUM_LEVELS);
 
@@ -189,13 +187,9 @@ public final class Core {
 				LOGGER.info("Closing setting screen.");
 				break;
 			case 5:
-				// Mute or Audio Setting
-				// not yet
-				// currentScreen = new AudioScreen(width, height, FPS);
-				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-				+ " Audio screen at " + FPS + " fps.");
+				LOGGER.info("Mute / Unmute Audio");
+				MusicManager.toggleIsMute();
 				returnCode = frame.setScreen(currentScreen);
-				LOGGER.info("Closing Audio screen.");				
 				break;
 			case 6:
 				// Video Setting? fps? something
@@ -209,7 +203,6 @@ public final class Core {
 			default:
 				break;
 			}
-
 		} while (returnCode != 0);
 
 		fileHandler.flush();
