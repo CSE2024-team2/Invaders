@@ -24,6 +24,8 @@ public class Ship extends Entity {
 	/** The number of bullets ship shoots at once. */
 	private int num_of_bullets = 1;
 
+	private int shipcode = 1;
+
 	private static final int UNIT_INTERVAL = 150;
 	private static final int UNIT_SHIP_SPEED = 1;
 	private static final int UNIT_BULLET_SPEED = 2;
@@ -41,10 +43,14 @@ public class Ship extends Entity {
 	 * @param positionY
 	 *            Initial position of the ship in the Y axis.
 	 */
-	public Ship(final int positionX, final int positionY) {
+	public Ship(final int positionX, final int positionY, int shipcode) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
-
-		this.spriteType = SpriteType.Ship;
+		if(this.shipcode == 1) {
+			this.spriteType = SpriteType.Ship;
+		} else if (this.shipcode == 2) {
+			this.spriteType = SpriteType.Ship2;
+		}
+		
 		this.shootingCooldown = Core.getCooldown(shooting_interval);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
@@ -106,8 +112,13 @@ public class Ship extends Entity {
 	public final void update() {
 		if (!this.destructionCooldown.checkFinished())
 			this.spriteType = SpriteType.ShipDestroyed;
-		else
-			this.spriteType = SpriteType.Ship;
+		else {
+			if(this.shipcode == 1) {
+				this.spriteType = SpriteType.Ship;
+			} else if (this.shipcode == 2) {
+				this.spriteType = SpriteType.Ship2;
+			}
+		}
 	}
 
 	/**
