@@ -44,7 +44,7 @@ public class Ship extends Entity {
 	 * @param positionY
 	 *            Initial position of the ship in the Y axis.
 	 */
-	public Ship(final int positionX, final int positionY, int shipcode) {
+	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 		ShipScreen shipscreen = new ShipScreen(width, height, 60);
 		this.shipcode = shipscreen.getShipCode();

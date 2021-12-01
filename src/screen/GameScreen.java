@@ -79,8 +79,6 @@ public class GameScreen extends Screen {
 	/** Check if resume is printed on log */
     private Boolean resumeLogged;
 
-	private int shipcode;
-
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 * 
@@ -112,7 +110,6 @@ public class GameScreen extends Screen {
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 		this.isPause = false;
-		this.shipcode = 1;
 		this.returnCode = 2;
 	}
 
@@ -124,7 +121,7 @@ public class GameScreen extends Screen {
 
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
-		this.ship = new Ship(this.width / 2, this.height - 30, shipcode);
+		this.ship = new Ship(this.width / 2, this.height - 30);
 		// Appears each 10-30 seconds.
 		this.enemyShipSpecialCooldown = Core.getVariableCooldown(
 				BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
