@@ -187,13 +187,9 @@ public final class Core {
 				LOGGER.info("Closing setting screen.");
 				break;
 			case 5:
-				// Mute or Audio Setting
-				// not yet
-				// currentScreen = new AudioScreen(width, height, FPS);
-				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-				+ " Audio screen at " + FPS + " fps.");
+				LOGGER.info("Mute / Unmute Audio");
+				MusicManager.toggleIsMute();
 				returnCode = frame.setScreen(currentScreen);
-				LOGGER.info("Closing Audio screen.");				
 				break;
 			case 6:
 				// Video Setting? fps? something

@@ -9,7 +9,7 @@ import engine.Cooldown;
 public class SettingScreen extends Screen {
 
     /** Milliseconds between changes in user selection. */
-	private static final int SELECTION_TIME = 200;
+	private static final int SELECTION_TIME = 500;
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
@@ -62,8 +62,10 @@ public class SettingScreen extends Screen {
 				nextMenuItem();
 				this.selectionCooldown.reset();
 			}
-			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
+			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
+				this.selectionCooldown.reset();
 				this.isRunning = false;
+			}
 		}
     }
 

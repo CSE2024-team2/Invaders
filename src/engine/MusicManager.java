@@ -1,5 +1,7 @@
 package engine;
 
+import screen.Screen;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -13,13 +15,13 @@ import java.io.*;
  */
 public class MusicManager {
 
-    private final static File main_bgm = new File("res\\Main BGM.wav"); // runtime 265000
-    private final static File shoot = new File("res\\Shoot.wav"); // runtime 1000
-    private final static File come_boss = new File("res\\Begin boss.wav"); // runtime 32000
-    private final static File game_bgm = new File("res\\Game BGM.wav"); // runtime 168000
-    private final static File ship_exp = new File("res\\Ship Explosion.wav");
-    private final static File enemy_exp = new File("res\\Enemy Ship Explosion.wav");
-    private final static File get_item = new File("res\\Get Item.wav");
+    private final static File main_bgm = new File("res/MainBGM.wav"); // runtime 265000
+    private final static File shoot = new File("res/Shoot.wav"); // runtime 1000
+    private final static File come_boss = new File("res/Begin boss.wav"); // runtime 32000
+    private final static File game_bgm = new File("res/GameBGM.wav"); // runtime 168000
+    private final static File ship_exp = new File("res/ShipExplosion.wav");
+    private final static File enemy_exp = new File("res/EnemyShipExplosion.wav");
+    private final static File get_item = new File("res/GetItem.wav");
 
     private static final int MAIN_BGM_LENGTH = 264000;
     private static final int GAME_BGM_LENGTH = 167000;
@@ -30,11 +32,24 @@ public class MusicManager {
     private static Clip main_clip = make_main_Clip();
     private static Clip game_clip = make_game_Clip();
 
-    /** 
+    private static boolean isMute = false;
+
+    public static boolean getIsMute(){
+        return isMute;
+    }
+
+    public static void toggleIsMute(){
+        isMute = !isMute;
+    }
+
+    /**
      * Method for running shooting sound.
      * 
      */
     public static void run_shoot() {
+        if(getIsMute()){
+            return;
+        }
         try {
             AudioInputStream stream = AudioSystem.getAudioInputStream(shoot);
             Clip clip = AudioSystem.getClip();
@@ -47,6 +62,9 @@ public class MusicManager {
     }
 
     public static void run_item() {
+        if(getIsMute()){
+            return;
+        }
         try {
             AudioInputStream stream = AudioSystem.getAudioInputStream(get_item);
             Clip clip = AudioSystem.getClip();
@@ -59,6 +77,9 @@ public class MusicManager {
     }
 
     public static void run_exp() {
+        if(getIsMute()){
+            return;
+        }
         try {
             AudioInputStream stream = AudioSystem.getAudioInputStream(enemy_exp);
             Clip clip = AudioSystem.getClip();
@@ -71,6 +92,9 @@ public class MusicManager {
     }
 
     public static void run_enemy_exp() {
+        if(getIsMute()){
+            return;
+        }
         try {
             AudioInputStream stream = AudioSystem.getAudioInputStream(ship_exp);
             Clip clip = AudioSystem.getClip();
@@ -87,6 +111,11 @@ public class MusicManager {
      * 
      */
     public static void run_main() {
+        if(getIsMute()){
+            main_clip.stop();
+            main_clip.setFramePosition(0);
+            return;
+        }
         if(main_clip.isRunning()) {
             if(mainCooldown.checkFinished()) {
                 main_clip.loop(-1);
@@ -109,6 +138,9 @@ public class MusicManager {
      * 
      */
     public static void run_game() {
+        if(getIsMute()){
+            return;
+        }
         if(game_clip.isRunning()) {
             if(gameCooldown.checkFinished()) {
                 game_clip.loop(-1);
@@ -153,6 +185,9 @@ public class MusicManager {
      * 
      */
     public static void run_begin_boss() {
+        if(getIsMute()){
+            return;
+        }
         try {
             AudioInputStream stream = AudioSystem.getAudioInputStream(come_boss);
             Clip clip = AudioSystem.getClip();

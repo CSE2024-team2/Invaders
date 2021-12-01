@@ -378,7 +378,12 @@ public final class DrawManager {
 	 */
 	public void drawSetting(final Screen screen, final int option) {
 		String titleString = "Back to the title";
-		String audioString = "Audio Setting";
+		String audioString = "";
+		if (MusicManager.getIsMute()){
+			audioString = "Unmute";
+		} else {
+			audioString = "Mute";
+		}
 		String videoString = "Video Setting";
 
 		if (option == 1)
