@@ -75,6 +75,8 @@ public class Entity {
 				return "res/image/specialship_r.png";
 			case RewardBullet:
 				return "res/image/reward.png";
+			case Explosion:
+				return "res/image/explosion.png";
 			default:
 				return "";
 		}
