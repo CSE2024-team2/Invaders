@@ -48,7 +48,7 @@ public class SettingScreen extends Screen {
 	 */
     protected final void update() {
 		super.update();
-		MusicManager.run_main();
+		MusicManager.runMain(MusicManager.BgmType.MainBgm);
         draw();
 		if (this.selectionCooldown.checkFinished()
 				&& this.inputDelay.checkFinished()) {
