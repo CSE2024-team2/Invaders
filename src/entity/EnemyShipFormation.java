@@ -143,10 +143,13 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 
 		spriteType = SpriteType.EnemyShipA1;
+		spriteType = spriteType.EnemyShipB1;
+		spriteType = spriteType.EnemyShipC1;
 		int count =0;
 		for (List<EnemyShip> column : this.enemyShips) {
 			for (int i = 0; i < this.nShipsHigh; i++) {
 				if(i < heartNumber){
+					spriteType = SpriteType.EnemyShipA1;
 					if(i==heartNumber-1) {
 						if (this.enemyShips.indexOf(column) == heartNumber - 1) {
 							column.add(new EnemyShip((SEPARATION_DISTANCE
@@ -165,6 +168,14 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 					}
 				}
 				else{
+					if(i %2==0){
+						spriteType = spriteType.EnemyShipB1;
+					}
+					else{
+						spriteType = spriteType.EnemyShipC1;
+					}
+
+
 					if(this.enemyShips.indexOf(column) <= heartNumber) {
 						if (i <= heartNumber + this.enemyShips.indexOf(column)) {
 							column.add(new EnemyShip((SEPARATION_DISTANCE
@@ -380,7 +391,11 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(shooter.getPositionX()
-					+ shooter.width / 2, shooter.getPositionY(), BULLET_SPEED));
+					+ shooter.width / 2, shooter.getPositionY(), BULLET_SPEED,shooter.getPositionX()+ shooter.width / 2));
+			bullets.add(BulletPool.getBullet(shooter.getPositionX()
+					, shooter.getPositionY(), BULLET_SPEED,shooter.getPositionX()+ shooter.width / 2));
+			bullets.add(BulletPool.getBullet(shooter.getPositionX()
+					+ shooter.width, shooter.getPositionY(), BULLET_SPEED,shooter.getPositionX()+ shooter.width / 2));
 		}
 	}
 
