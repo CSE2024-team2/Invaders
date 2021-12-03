@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.Ship;
 import screen.*;
 
 /**
@@ -68,6 +69,8 @@ public final class Core {
 	/** Logger handler for printing to console. */
 	private static ConsoleHandler consoleHandler;
 
+
+
 	/**
 	 * Test implementation.
 	 * 
@@ -124,6 +127,7 @@ public final class Core {
 				break;
 			case 2:
 				// Game & score.
+				Ship ship = new Ship(width / 2, height - 30);
 				do {
 					// One extra live every few levels.
 					boolean bonusLife = gameState.getLevel()
@@ -132,7 +136,7 @@ public final class Core {
 					
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, width, height, FPS, ship);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 							+ " game screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);

@@ -97,7 +97,7 @@ public class GameScreen extends Screen {
 	 */
 	public GameScreen(final GameState gameState,
 			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+			final int width, final int height, final int fps, Ship ship) {
 		super(width, height, fps);
 
 		this.gameSettings = gameSettings;
@@ -111,6 +111,7 @@ public class GameScreen extends Screen {
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 		this.isPause = false;
 		this.returnCode = 2;
+		this.ship = ship;
 	}
 
 	/**
@@ -121,7 +122,6 @@ public class GameScreen extends Screen {
 
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
-		this.ship = new Ship(this.width / 2, this.height - 30);
 		// Appears each 10-30 seconds.
 		this.enemyShipSpecialCooldown = Core.getVariableCooldown(
 				BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
