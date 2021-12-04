@@ -85,25 +85,25 @@ public class Ship extends Entity {
 		if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 1) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
-					positionY, bullet_speed));
+					positionY, bullet_speed,positionX));
 			return true;
 		}
 		else if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 2) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX,
-					positionY, bullet_speed));
+					positionY, bullet_speed,positionX));
 			bullets.add(BulletPool.getBullet(positionX + this.width,
-					positionY, bullet_speed));
+					positionY, bullet_speed,positionX));
 			return true;
 		}
 		else if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 3) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX - 10,
-					positionY, bullet_speed));
+					positionY, bullet_speed,positionX));
 			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
-					positionY, bullet_speed));
+					positionY, bullet_speed,positionX));
 			bullets.add(BulletPool.getBullet(positionX + this.width + 10,
-					positionY, bullet_speed));
+					positionY, bullet_speed,positionX));
 			return true;
 		}
 		return false;

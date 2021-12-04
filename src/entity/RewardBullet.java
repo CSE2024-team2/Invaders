@@ -12,7 +12,7 @@ public class RewardBullet extends Bullet{
     private Logger logger;
 
     public RewardBullet(final int positionX, final int positionY) {
-        super(positionX, positionY, REWARD_BULLET_SPEED);
+        super(positionX, positionY, REWARD_BULLET_SPEED,positionX);
         this.width = 5*2;
         this.height = 5*2;
         this.spriteType = SpriteType.RewardBullet;
