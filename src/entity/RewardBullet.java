@@ -19,8 +19,4 @@ public class RewardBullet extends Bullet{
         this.logger = Core.getLogger();
     }
 
-    public void getReward(){
-        this.logger.info("get reward...");
-    }
-
 }
