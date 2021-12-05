@@ -157,7 +157,7 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-		MusicManager.run_game();
+		MusicManager.runMain(MusicManager.BgmType.GameBgm);
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
 			if (!this.ship.isDestroyed()) {
@@ -179,7 +179,7 @@ public class GameScreen extends Screen {
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
 					if (this.ship.shoot(this.bullets)) {
-						MusicManager.run_shoot();
+						MusicManager.runBgm(MusicManager.BgmType.Shoot);
 						this.bulletsShot++;
 					}
 				
@@ -364,7 +364,7 @@ public class GameScreen extends Screen {
 						}
 						else {
 							this.ship.destroy();
-							MusicManager.run_exp();
+							MusicManager.runBgm(MusicManager.BgmType.EnemyExp);
 							this.lives--;
 							this.logger.info("Hit on player ship, " + this.lives
 									+ " lives remaining.");
@@ -376,7 +376,7 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
-						MusicManager.run_enemy_exp();
+						MusicManager.runBgm(MusicManager.BgmType.ShipExp);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -385,7 +385,7 @@ public class GameScreen extends Screen {
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					this.score += this.enemyShipSpecial.getPointValue();
-					MusicManager.run_enemy_exp();
+					MusicManager.runBgm(MusicManager.BgmType.ShipExp);
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
@@ -425,7 +425,7 @@ public class GameScreen extends Screen {
 		// 한 스테이지에서만 적용
 		int tmp = (int)(Math.random() * 5);
 		this.logger.info("get reward...");
-		MusicManager.run_item();
+		MusicManager.runBgm(MusicManager.BgmType.GetItem);
 		switch(tmp) {
 		case 1:
 			ship.increase_Numofbullets();

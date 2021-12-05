@@ -47,7 +47,7 @@ public class PauseScreen extends Screen {
 	 */
     protected final void update() {
 		super.update();
-		MusicManager.run_game();
+		MusicManager.runMain(MusicManager.BgmType.GameBgm);
 		// 화면에서 옵션 선택 메뉴 구현
 		draw();
 

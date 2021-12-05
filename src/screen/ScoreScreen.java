@@ -101,7 +101,7 @@ public class ScoreScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-		MusicManager.run_game();
+		MusicManager.runMain(MusicManager.BgmType.GameBgm);
 		draw();
 		if (this.inputDelay.checkFinished()) {
 			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {

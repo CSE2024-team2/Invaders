@@ -15,13 +15,28 @@ import java.io.*;
  */
 public class MusicManager {
 
-    private final static File main_bgm = new File("res/MainBGM.wav"); // runtime 265000
-    private final static File shoot = new File("res/Shoot.wav"); // runtime 1000
-    private final static File come_boss = new File("res/BeginBoss.wav"); // runtime 32000
-    private final static File game_bgm = new File("res/JingleBells.wav"); // runtime 168000
-    private final static File ship_exp = new File("res/ShipExplosion.wav");
-    private final static File enemy_exp = new File("res/EnemyShipExplosion.wav");
-    private final static File get_item = new File("res/GetItem.wav");
+
+    /** Bgm Types. */
+    public static enum BgmType {
+        MainBgm,
+        Shoot,
+        ComeBoss,
+        GameBgm,
+        ShipExp,
+        EnemyExp,
+        GetItem
+    };
+
+    /** bgm file 인스턴스들을 모아둔 배열 */
+    private final static File[] bgms = {
+            new File("res/MainBGM.wav"),
+            new File("res/Shoot.wav"),
+            new File("res/BeginBoss.wav"),
+            new File("res/GameBGM.wav"),
+            new File("res/ShipExplosion.wav"),
+            new File("res/EnemyShipExplosion.wav"),
+            new File("res/GetItem.wav")
+    };
 
     private static final int MAIN_BGM_LENGTH = 264000;
     private static final int GAME_BGM_LENGTH = 102000;
@@ -29,209 +44,114 @@ public class MusicManager {
     public static Cooldown mainCooldown = Core.getCooldown(MAIN_BGM_LENGTH);
     public static Cooldown gameCooldown = Core.getCooldown(GAME_BGM_LENGTH);
 
-    private static Clip main_clip = make_main_Clip();
-    private static Clip game_clip = make_game_Clip();
+    private static Clip mainClip = makeClip(BgmType.MainBgm);
+    private static Clip gameClip = makeClip(BgmType.GameBgm);
 
     private static boolean isMute = false;
 
+    /**
+     * setting이 mute인지 확인
+     * @return true if mute else false
+     */
     public static boolean getIsMute(){
         return isMute;
     }
 
     public static void test_sonar(){
+
         isMute = !isMute;
     }
 
     /**
-     * Method for running shooting sound.
-     * 
+     * bgms 배열에서 인자로 받은 enum에 해당하는 file을 return
+     * @param bgm BgmType이 정의된 enum
+     * @return BgmType에 맞는 file
      */
-    public static void run_shoot() {
-        if(getIsMute()){
-            return;
-        }
-        try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(shoot);
-            Clip clip = AudioSystem.getClip();
-            clip.open(stream);
-            clip.start();
-        } catch(Exception e) {
-            //TODO: handle exception
-            e.printStackTrace();
-        }
+    public static File getBgm(BgmType bgm){
+        return bgms[bgm.ordinal()];
     }
-
-    public static void run_item() {
-        if(getIsMute()){
-            return;
-        }
-        try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(get_item);
-            Clip clip = AudioSystem.getClip();
-            clip.open(stream);
-            clip.start();
-        } catch(Exception e) {
-            //TODO: handle exception
-            e.printStackTrace();
-        }
-    }
-
-    public static void run_exp() {
-        if(getIsMute()){
-            return;
-        }
-        try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(enemy_exp);
-            Clip clip = AudioSystem.getClip();
-            clip.open(stream);
-            clip.start();
-        } catch(Exception e) {
-            //TODO: handle exception
-            e.printStackTrace();
-        }
-    }
-
-    public static void run_enemy_exp() {
-        if(getIsMute()){
-            return;
-        }
-        try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(ship_exp);
-            Clip clip = AudioSystem.getClip();
-            clip.open(stream);
-            clip.start();
-        } catch(Exception e) {
-            //TODO: handle exception
-            e.printStackTrace();
-        }
-    }
-
-    /** 
-     * Method for running BGM for main lobby.
-     * 
-     */
-    public static void run_main() {
-        if(getIsMute()){
-            main_clip.stop();
-            main_clip.setFramePosition(0);
-            return;
-        }
-        if(main_clip.isRunning()) {
-            if(mainCooldown.checkFinished()) {
-                main_clip.loop(-1);
-                main_clip.start();
-                mainCooldown.reset();
-            }
-        }
-        else {
-            if(game_clip.isRunning()) {
-                stop_game();
-            }
-            main_clip.loop(-1);
-            main_clip.start();
-            mainCooldown.reset();
-        }
-    }
-
-    /** 
-     * Method for running BGM for game.
-     * 
-     */
-    public static void run_game() {
-        if(getIsMute()){
-            return;
-        }
-        if(game_clip.isRunning()) {
-            if(gameCooldown.checkFinished()) {
-                game_clip.loop(-1);
-                game_clip.start();
-                gameCooldown.reset();
-            }
-        }
-        else {
-            if(main_clip.isRunning()) {
-                stop_main();
-            }
-            game_clip.loop(-1);
-            game_clip.start();
-            gameCooldown.reset();
-        }
-    }
-
-    /** 
-     * Method for stoping BGM for main lobby.
-     * 
-     */
-    public static void stop_main() {
-        if(main_clip.isRunning()) {
-            main_clip.stop();
-            main_clip.setFramePosition(0);
-        }
-    }
-
-    /** 
-     * Method for stoping BGM for boss appearance.
-     * 
-     */
-    public static void stop_game() {
-        if(game_clip.isRunning()) {
-            game_clip.stop();
-            game_clip.setFramePosition(0);
-        }
-    }
-
-    /** 
-     * Method for running BGM for boss appearance.
-     * 
-     */
-    public static void run_begin_boss() {
-        if(getIsMute()){
-            return;
-        }
-        try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(come_boss);
-            Clip clip = AudioSystem.getClip();
-            clip.open(stream);
-            clip.start();
-        } catch(Exception e) {
-            //TODO: handle exception
-            e.printStackTrace();
-        }
-    }
-
 
     /**
-     * Make Main lobby BGM Clip.
-     * 
-     * @return Lobby BGM Clip
+     * bgm을 재생
+     * @param bgm BgmType이 정의된 enum
      */
-    private static Clip make_main_Clip() {
-        Clip clip;
+    public static void runBgm(BgmType bgm) {
+        if(getIsMute()) return;
         try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(main_bgm);
-            clip = AudioSystem.getClip();
+            AudioInputStream stream = AudioSystem.getAudioInputStream(getBgm(bgm));
+            Clip clip = AudioSystem.getClip();
             clip.open(stream);
-            return clip;
-        } catch(Exception e) {
+            clip.start();
+        } catch (Exception e){
             //TODO: handle exception
             e.printStackTrace();
-            return null;
         }
     }
 
     /**
-     * Make In-Game BGM Clip.
-     * 
-     * @return In-Game BGM Clip
+     * main bgm 혹은 game bgm을 재생
+     * @param bgm BgmType이 정의된 enum
      */
-    private static Clip make_game_Clip() {
+    public static void runMain(BgmType bgm) {
+        if(getIsMute()){
+            stopClip(mainClip);
+            return;
+        }
+        Clip clipOne, clipTwo;
+        Cooldown cooldownOne;
+
+        if (bgm == BgmType.MainBgm) {
+            clipOne = mainClip;
+            clipTwo = gameClip;
+            cooldownOne = mainCooldown;
+        } else if (bgm == BgmType.GameBgm) {
+            clipOne = gameClip;
+            clipTwo = mainClip;
+            cooldownOne = gameCooldown;
+        } else {
+            return ;
+        }
+
+        if (clipOne.isRunning()) {
+            if (cooldownOne.checkFinished()){
+                clipOne.loop(-1);
+                clipOne.start();
+                cooldownOne.reset();
+            }
+        } else {
+            if (clipTwo.isRunning()){
+                stopClip(clipTwo);
+            }
+            clipOne.loop(-1);
+            clipOne.start();
+            cooldownOne.reset();
+        }
+
+    }
+
+
+    /**
+     * 인자로 받은 clip의 재생을 정지
+     * @param clip 정지할 clip
+     */
+    public static void stopClip(Clip clip){
+        clip.stop();
+        clip.setFramePosition(0);
+    }
+
+    /**
+     * file을 통해 clip을 생성
+     * @param bgm BgmType이 정의된 enum
+     * @return 생성된 clip
+     */
+    private static Clip makeClip(BgmType bgm){
         Clip clip;
         try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(game_bgm);
+            AudioInputStream stream = AudioSystem.getAudioInputStream(getBgm(bgm));
             clip = AudioSystem.getClip();
             clip.open(stream);
             return clip;
-        } catch(Exception e) {
+        } catch (Exception e){
             //TODO: handle exception
             e.printStackTrace();
             return null;

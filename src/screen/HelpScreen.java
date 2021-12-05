@@ -40,7 +40,7 @@ public class HelpScreen extends Screen{
      */
     protected final void update() {
         super.update();
-        MusicManager.run_main();
+        MusicManager.runMain(MusicManager.BgmType.MainBgm);
         draw();
         if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
                 && this.inputDelay.checkFinished())
