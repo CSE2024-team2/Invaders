@@ -58,6 +58,10 @@ public final class BulletPool {
 	 *            Bullets to recycle.
 	 */
 	public static void recycle(final Set<Bullet> bullet) {
-		pool.addAll(bullet);
+		for (Bullet b : bullet) {
+			if (!(b instanceof RewardBullet)){
+				pool.add(b);
+			}
+		}
 	}
 }
