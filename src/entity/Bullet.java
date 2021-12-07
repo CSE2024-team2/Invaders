@@ -1,8 +1,8 @@
 package entity;
 
-import java.awt.Color;
-
 import engine.DrawManager.SpriteType;
+
+import java.awt.*;
 
 /**
  * Implements a bullet that moves vertically up or down.
@@ -39,7 +39,9 @@ public class Bullet extends Entity {
 		this.speed = speed;
 		setSprite();
 	}
-
+	public final void setShooterPositionX(int num) {
+		shootPosition = num;
+	}
 	/**
 	 * Sets correct sprite for the bullet, based on speed.
 	 */
@@ -56,11 +58,12 @@ public class Bullet extends Entity {
 	public final void update() {
 		this.positionY += this.speed;
 		if(this.speed > 0) {
-			if (initialPositionX < shootPosition) {
-				this.positionX -= this.speed / 3;
-			} else if (initialPositionX > shootPosition) {
-				this.positionX += this.speed / 3;
-			}
+				if (shootPosition==2) {
+					this.positionX -= this.speed / 3;
+				}
+				else if (shootPosition==3) {
+					this.positionX += this.speed / 3;
+				}
 		}
 	}
 
