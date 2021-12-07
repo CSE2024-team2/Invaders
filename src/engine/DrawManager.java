@@ -85,7 +85,9 @@ public final class DrawManager {
 
 		BossShip,
 
-		Ship2
+		Ship2,
+
+		Ship3
 	};
 
 	/**
@@ -105,6 +107,7 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyBullet, new boolean[3][5]);
 			spriteMap.put(SpriteType.BossShip, new boolean[36][24]);
 			spriteMap.put(SpriteType.Ship2, new boolean[13][8]);
+			spriteMap.put(SpriteType.Ship3, new boolean[13][8]);
 
 
 			fileManager.loadSprite(spriteMap);
@@ -720,10 +723,15 @@ public final class DrawManager {
 				rectWidth, rectHeight);
 		backBufferGraphics.setColor(Color.GREEN);
 		if (number >= 4)
-			if (!bonusLife) {
+			if (!bonusLife && level != 2) {
 				drawCenteredBigString(screen, "Level " + level,
 						screen.getHeight() / 2
 						+ fontBigMetrics.getHeight() / 3);
+			} else if (!bonusLife && level == 2) {
+				drawCenteredBigString(screen, "Level " + level
+								+ " - Ship Changed!",
+						screen.getHeight() / 2
+								+ fontBigMetrics.getHeight() / 3);
 			} else {
 				drawCenteredBigString(screen, "Level " + level
 						+ " - Bonus life!",
