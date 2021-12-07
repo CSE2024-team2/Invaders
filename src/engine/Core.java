@@ -197,6 +197,14 @@ public final class Core {
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing Video screen.");
 				break;
+      		case 7:
+        		// Help.
+				currentScreen = new HelpScreen(width, height, FPS);
+				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+						+ " help screen at " + FPS + " fps.");
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing help screen.");
+				break;
 
 			default:
 				break;
