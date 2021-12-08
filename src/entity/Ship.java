@@ -52,6 +52,8 @@ public class Ship extends Entity {
 			this.spriteType = SpriteType.Ship;
 		} else if (this.shipcode == 2) {
 			this.spriteType = SpriteType.Ship2;
+		} else if (this.shipcode == 3) {
+			this.spriteType = SpriteType.Ship3;
 		}
 		
 		this.shootingCooldown = Core.getCooldown(shooting_interval);
@@ -120,6 +122,8 @@ public class Ship extends Entity {
 				this.spriteType = SpriteType.Ship;
 			} else if (this.shipcode == 2) {
 				this.spriteType = SpriteType.Ship2;
+			} else if (this.shipcode == 3) {
+				this.spriteType = SpriteType.Ship3;
 			}
 		}
 	}
@@ -231,5 +235,9 @@ public class Ship extends Entity {
 	public final void decrease_Numofbullets() {
 		if(num_of_bullets > 1)
 			this.num_of_bullets -= 1;
+	}
+
+	public final void changeShipcode() {
+		this.shipcode = 3;
 	}
 }

@@ -79,6 +79,8 @@ public class GameScreen extends Screen {
 	/** Check if resume is printed on log */
     private Boolean resumeLogged;
 
+	private Boolean isGetReward;
+
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 * 
@@ -86,7 +88,7 @@ public class GameScreen extends Screen {
 	 *            Current game state.
 	 * @param gameSettings
 	 *            Current game settings.
-	 * @param bonnusLife
+	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
 	 * @param width
 	 *            Screen width.
@@ -112,6 +114,7 @@ public class GameScreen extends Screen {
 		this.isPause = false;
 		this.returnCode = 2;
 		this.ship = ship;
+		this.isGetReward = false;
 	}
 
 	/**
@@ -236,6 +239,10 @@ public class GameScreen extends Screen {
 		}
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			this.logger.info("Your ship is approved!");
+			if(this.level == 1)
+				this.getStageReward();
+			this.getReward();
 			this.isRunning = false;
 		}
 		
@@ -255,7 +262,6 @@ public class GameScreen extends Screen {
 				this.logger.info("Resumed");
 				resumeLogged = true;
 			}
-
 			drawManager.initDrawing(this);
 
 			drawManager.drawEntity(this.ship, this.ship.getPositionX(),
@@ -447,6 +453,11 @@ public class GameScreen extends Screen {
 			this.logger.info("Oops! not in here!");
 			break;
 		}
+	}
+
+	private void getStageReward() {
+		ship.changeShipcode();
+		ship.update();
 	}
 
 	/**
