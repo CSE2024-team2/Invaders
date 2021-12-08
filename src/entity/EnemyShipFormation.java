@@ -25,7 +25,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	/** Initial position in the x-axis. */
 	private static final int INIT_POS_X = 20;
 	/** Initial position in the x-axis. */
-	private static final int INIT_POS_Y = 100;
+	private static final int INIT_POS_Y = 20;
 	/** Distance between ships. */
 	private static final int SEPARATION_DISTANCE = 40;
 	/** Proportion of C-type ships. */
@@ -202,6 +202,18 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			}
 		}
 
+		spriteType = SpriteType.EnemyShipA1;
+		enemyShips.get(0).add(new EnemyShip((SEPARATION_DISTANCE
+				*0)
+				+ positionX, (SEPARATION_DISTANCE * (nShipsHigh-1))
+				+ positionY, spriteType));
+		this.shipCount++;
+		enemyShips.get(enemyShips.size()-1).add(new EnemyShip((SEPARATION_DISTANCE
+				*(nShipsWide-1))
+				+ positionX, (SEPARATION_DISTANCE * (nShipsHigh-1))
+				+ positionY, spriteType));
+		this.shipCount++;
+
 
 		this.shipWidth = this.enemyShips.get(0).get(0).getWidth();
 		this.shipHeight = this.enemyShips.get(0).get(0).getHeight();
@@ -328,6 +340,15 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 			for (List<EnemyShip> column : this.enemyShips)
 				for (EnemyShip enemyShip : column) {
+					if(!isAtBottom) {
+						movementY = Y_SPEED / 3;
+						if (enemyShips.get(0) == column && column.get(column.size() - 1) == enemyShip) {
+							movementY = Y_SPEED;
+						}
+						if (enemyShips.get(enemyShips.size() - 1) == column && column.get(column.size() - 1) == enemyShip) {
+							movementY = Y_SPEED;
+						}
+					}
 					enemyShip.move(movementX, movementY);
 					enemyShip.update();
 				}
@@ -391,11 +412,11 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(shooter.getPositionX()
-					+ shooter.width / 2, shooter.getPositionY(), BULLET_SPEED,shooter.getPositionX()+ shooter.width / 2));
+					+ shooter.width / 2, shooter.getPositionY(), BULLET_SPEED,1));
 			bullets.add(BulletPool.getBullet(shooter.getPositionX()
-					, shooter.getPositionY(), BULLET_SPEED,shooter.getPositionX()+ shooter.width / 2));
+					, shooter.getPositionY(), BULLET_SPEED,2));
 			bullets.add(BulletPool.getBullet(shooter.getPositionX()
-					+ shooter.width, shooter.getPositionY(), BULLET_SPEED,shooter.getPositionX()+ shooter.width / 2));
+					+ shooter.width, shooter.getPositionY(), BULLET_SPEED,3));
 		}
 	}
 
