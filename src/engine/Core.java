@@ -20,7 +20,7 @@ public final class Core {
 	/** Height of current screen. */
 	private static final int HEIGHT = 780;
 	/** Max fps of current screen. */
-	private static final int FPS = 160;
+	private static final int FPS = 90;
 
 	/** Max lives. */
 	private static final int MAX_LIVES = 3;

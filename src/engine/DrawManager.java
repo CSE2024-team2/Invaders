@@ -722,11 +722,11 @@ public final class DrawManager {
 				rectWidth, rectHeight);
 		backBufferGraphics.setColor(Color.GREEN);
 		if (number >= 4)
-			if (!bonusLife && level != 2) {
+			if (!bonusLife && level != 4) {
 				drawCenteredBigString(screen, "Level " + level,
 						screen.getHeight() / 2
 						+ fontBigMetrics.getHeight() / 3);
-			} else if (!bonusLife && level == 2) {
+			} else if (!bonusLife && level == 4) {
 				drawCenteredBigString(screen, "Level " + level
 								+ " - Ship Changed!",
 						screen.getHeight() / 2
@@ -744,4 +744,11 @@ public final class DrawManager {
 			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
 					+ fontBigMetrics.getHeight() / 3);
 	}
+
+	public void drawGetItem(final Screen screen, String rewardInfo) {
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredRegularString(screen, rewardInfo, 25);
+	}
+
+
 }
