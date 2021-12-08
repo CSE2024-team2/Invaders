@@ -24,15 +24,19 @@ public class GameScreen extends Screen {
 	/** Bonus score for each life remaining at the end of the level. */
 	private static final int LIFE_SCORE = 100;
 	/** Minimum time between bonus ship's appearances. */
-	private static final int BONUS_SHIP_INTERVAL = 15000;
+	private static final int BONUS_SHIP_INTERVAL = 7500;
 	/** Maximum variance in the time between bonus ship's appearances. */
-	private static final int BONUS_SHIP_VARIANCE = 10000;
+	private static final int BONUS_SHIP_VARIANCE = 5000;
 	/** Time until bonus ship explosion disappears. */
 	private static final int BONUS_SHIP_EXPLOSION = 500;
 	/** Time from finishing the level to screen change. */
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Limit of Math.random()'s number (0~3: reward, 4: fail) **/
+	private final int REWARD_WITHOUT_FAIL = 4;
+	private final int REWARD_WITH_FAIL = 5;
+
 	/** Difficulty settings for level 1. */
 	private static final GameSettings RESTART_SETTING =
 			new GameSettings(5, 4, 60, 2000);
@@ -75,11 +79,17 @@ public class GameScreen extends Screen {
 	/** Check if game is pause */
 	private boolean isPause;
 	/** Check ESC Cooldown */
-	private Cooldown escCooldown; 
+	private Cooldown escCooldown;
+	/** Check get reward information Cooldown */
+	private Cooldown itemCooldown;
+
 	/** Check if resume is printed on log */
     private Boolean resumeLogged;
 
 	private Boolean isGetReward;
+
+	/** Save reward that user get **/
+	private static String rewardInfo;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -135,6 +145,7 @@ public class GameScreen extends Screen {
 		this.bullets = new HashSet<Bullet>();
 		this.escCooldown = Core.getCooldown(500);
 		this.escCooldown.reset();
+		this.itemCooldown = Core.getCooldown(2000);
         this.resumeLogged = true;
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -240,9 +251,9 @@ public class GameScreen extends Screen {
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
 			this.logger.info("Your ship is approved!");
-			if(this.level == 1)
+			if(this.level == 3)
 				this.getStageReward();
-			this.getReward();
+			this.getReward(REWARD_WITHOUT_FAIL);
 			this.isRunning = false;
 		}
 		
@@ -281,6 +292,11 @@ public class GameScreen extends Screen {
 			drawManager.drawScore(this, this.score);
 			drawManager.drawLives(this, this.lives);
 			drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+
+			// Draw reward that user got.
+			if(!this.itemCooldown.checkFinished() || (!this.inputDelay.checkFinished() && this.level > 1)){
+				drawManager.drawGetItem(this, this.rewardInfo);
+			}
 
 			// Countdown to game start.
 			if (!this.inputDelay.checkFinished()) {
@@ -366,7 +382,7 @@ public class GameScreen extends Screen {
 					if (!this.ship.isDestroyed()) {
 						if (bullet instanceof RewardBullet){
 							this.logger.info("Reward acquire.");
-							this.getReward();
+							this.getReward(REWARD_WITH_FAIL);
 						}
 						else {
 							this.ship.destroy();
@@ -427,32 +443,36 @@ public class GameScreen extends Screen {
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
 
-	private void getReward() {
-		// 한 스테이지에서만 적용
-		int tmp = (int)(Math.random() * 5);
-		this.logger.info("get reward...");
-		MusicManager.runBgm(MusicManager.BgmType.GetItem);
-		switch(tmp) {
-		case 1:
-			ship.increase_Numofbullets();
-			this.logger.info("shoot more!");
-			break;
-		case 2:
-			ship.decrease_Interval();
-			this.logger.info("shoot faster!");
-			break;
-		case 3:
-			ship.increase_BulletSpeed();
-			this.logger.info("bullets are going faster!");
-			break;
-		case 4:
-			ship.increase_Speed();
-			this.logger.info("move faster!");
-			break;
-		default:
-			this.logger.info("Oops! not in here!");
-			break;
+	private void getReward(int limit) {
+		if (limit == REWARD_WITHOUT_FAIL){
+			rewardInfo = "Stage Reward: ";
+		} else {
+			rewardInfo = "";
 		}
+		int tmp = (int)(Math.random() * limit);
+		String info = "";
+		this.logger.info("Get reward...");
+		MusicManager.runBgm(MusicManager.BgmType.GetItem);
+		if (tmp == 0) {
+			ship.increase_Numofbullets();
+			info = "Shoot More!";
+		} else if (tmp == 1){
+			ship.decrease_Interval();
+			info = "Shoot Interval Decrease!";
+		} else if (tmp == 2){
+			ship.increase_BulletSpeed();
+			info = "Bullets are going faster!";
+		} else if (tmp == 3){
+			ship.increase_Speed();
+			info = "Move Faster!";
+		} else {
+			info = "Oops! Not in here!";
+		}
+		this.logger.info(info);
+		this.rewardInfo += info;
+
+		itemCooldown.reset();
+
 	}
 
 	private void getStageReward() {
